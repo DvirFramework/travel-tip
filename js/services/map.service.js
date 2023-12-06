@@ -1,6 +1,6 @@
 import { storageService } from "./async-storage.service.js"
 import { utilService } from "./util.service.js"
-const LOACATION_KEY = "locaitionDB"
+
 export const mapService = {
   initMap,
   addMarker,
@@ -49,4 +49,3 @@ function _connectGoogleApi() {
     elGoogleApi.onerror = () => reject("Google script failed to load")
   })
 }
-
