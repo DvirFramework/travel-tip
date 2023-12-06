@@ -9,16 +9,14 @@ export const locService = {
   query,
   get,
   remove,
+  save,
   addLocation,
-  getPlaceById
+  getPlaceById,
+  getPlaces,
+  getEmptyLoc
 }
 
 var gLocations = []
-
-// const locs = [
-//   { name: "Greatplace", lat: 32.047104, lng: 34.832384 },
-//   { name: "Neveragain", lat: 32.047201, lng: 34.832581 }
-// ]
 
 function getLocs() {
   return new Promise((resolve, reject) => {
@@ -38,8 +36,8 @@ function get(locationId) {
   return storageService.get(LOACATION_KEY, locationId)
 }
 
-function remove(locationId) {
-  return storageService.remove(LOACATION_KEY, locationId)
+function remove(locationName) {
+  return storageService.remove(LOACATION_KEY, locationName)
 }
 
 function save(location) {
@@ -75,16 +73,24 @@ function _createLocations() {
 }
 function _createDemoLocations() {
   const locationNames = ["israel", "germany", "brazil"]
-  // const petDescs = ['Bobi is an amazing dog', 'Charli is a curious cat', 'Just one look at Pinchi']
 
   const locations = locationNames.map((locationName) => {
     const location = _createLocation(locationName)
-    // pet.desc = petDescs[i]
     return location
   })
 
   utilService.saveToStorage(LOACATION_KEY, locations)
 }
+
+// function getEmptyLoc(name, lat, lng) {
+//   return {
+//     name,
+//     lat,
+//     lng,
+//     createAt: new Date(),
+//     updatedAt: new Date(),
+//   }
+// }
 
 function addLocation(name, lat, lng, zoom) {
   const newLocation = _createLocation(name, lat, lng, zoom)

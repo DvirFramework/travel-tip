@@ -7,7 +7,7 @@ window.onPanTo = onPanTo
 window.onGetLocs = onGetLocs
 window.onGetUserPos = onGetUserPos
 window.onAddLocation = onAddLocation
-
+window.onRemoveLocation = onRemoveLocation
 let gMarkers = []
 var gMap
 
@@ -25,6 +25,22 @@ function onInit() {
       })
     })
     .catch(() => console.log("Error: cannot init map"))
+}
+
+function renderLocations() {
+  locService.getLocs().then((locs) => {
+    var locations = locs
+    const elTable = document.querySelector(".locations-table")
+    var strHtml = locations
+      .map(
+        (location) => `<tr class="place"><td>${location.name}</td>
+                                       <td>${location.lat}</td> <td>${location.lng}</td><td><button class="go"
+                                        onclick="onPanTo(${location.lat},${location.lng})">GO</button><td><button class="remove" 
+                                        onclick="onRemoveLocation('${location.name}')">DELETE</button>`
+      )
+      .join("")
+    elTable.innerHTML = strHtml
+  })
 }
 
 // This function provides a Promise API to the callback-based-api of getCurrentPosition
@@ -51,70 +67,38 @@ function onGetUserPos() {
   getPosition()
     .then((pos) => {
       console.log("User position is:", pos.coords)
-      document.querySelector(
-        ".user-pos"
-      ).innerText = `Latitude: ${pos.coords.latitude} - Longitude: ${pos.coords.longitude}`
+      const place = prompt("Enter your location's name:")
+      document.querySelector(".user-pos").innerText = place
+      return { pos, place }
     })
+    .then((loc) =>
+      locService.getEmptyLoc(
+        loc.place,
+        loc.pos.coords.latitude,
+        loc.pos.coords.longitude
+      )
+    )
+    .then((loc) => locService.save(loc))
+    .then((loc) => onPanTo(loc.lat, loc.lng))
+    .then(() => renderLocations())
     .catch((err) => {
       console.log("err!!!", err)
     })
 }
-function onPanTo(lat, lng) {
+
+// function onAddMarker() {
+//     console.log('Adding a marker')
+//     mapService.addMarker({ lat: 32.0749831, lng: 34.9120554 })
+// }
+
+function onGetLocs() {
+  locService.getLocs().then((locs) => {
+    console.log("Locations:", locs)
+    document.querySelector(".locs").innerText = JSON.stringify(locs, null, 2)
+  })
+}
+
+function onPanTo() {
   console.log("Panning the Map")
-  mapService.panTo(lat, lng)
-}
-
-function onAddLocation(ev) {
-  console.log(ev)
-  const name = prompt("location name?", "New location")
-  if (!name) return
-  const lat = ev.latLng.lat()
-  const lng = ev.latLng.lng()
-
-  locService
-    .addLocation(name, lat, lng, 15)
-    .then((newLocation) => {
-      renderMarkers()
-      // Optionally, do something with the newLocation if needed
-      console.log("Location added:", newLocation)
-    })
-    .catch((error) => console.log("Error adding location:", error))
-}
-
-function renderMarkers() {
-  locService
-    .getLocs()
-    .then((locations) => {
-      console.log(console.log("Raw data from locService:", locations))
-      clearMarkers() // Clear existing markers
-      gMarkers = locations
-        .map((location) => {
-          const lat = parseFloat(location.lat)
-          const lng = parseFloat(location.lng)
-
-          if (isNaN(lat) || isNaN(lng)) {
-            console.error(
-              `Invalid coordinates for location: ${JSON.stringify(location)}`
-            )
-            return null // Skip this location if coordinates are invalid
-          }
-
-          const marker = new google.maps.Marker({
-            position: { lat, lng },
-            map: gMap,
-            title: location.name
-          })
-
-          // You can add additional customization or event listeners to the marker here if needed
-
-          return marker
-        })
-        .filter((marker) => marker !== null) // Remove markers that were skipped due to invalid coordinates
-    })
-    .catch((error) => console.log("Error rendering markers:", error))
-}
-
-function clearMarkers() {
-  gMarkers.forEach((marker) => marker.setMap(null))
-  gMarkers = []
+  mapService.panTo(35.6895, 139.6917)
 }
