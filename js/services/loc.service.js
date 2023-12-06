@@ -82,20 +82,20 @@ function _createDemoLocations() {
   utilService.saveToStorage(LOACATION_KEY, locations)
 }
 
-// function getEmptyLoc(name, lat, lng) {
-//   return {
-//     name,
-//     lat,
-//     lng,
-//     createAt: new Date(),
-//     updatedAt: new Date(),
-//   }
-// }
+function getEmptyLoc(name, lat, lng) {
+  return {
+    name,
+    lat,
+    lng,
+    createAt: new Date(),
+    updatedAt: new Date()
+  }
+}
 
 function addLocation(name, lat, lng, zoom) {
   const newLocation = _createLocation(name, lat, lng, zoom)
   gLocations.push(newLocation)
-  storageService.post(LOACATION_KEY, newLocation)
+  return Promise.resolve(storageService.post(LOACATION_KEY, newLocation))
 }
 
 function getPlaceById(placeId) {

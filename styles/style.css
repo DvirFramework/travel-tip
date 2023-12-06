@@ -17,10 +17,7 @@
 @import url("./components/buttons.css");
 @import url("./components/map.css");
 @import url("./components/footer.css");
-
-
-
-
+@import url("components/table.css");
 
 /* body {
     font-family: Arial, sans-serif;

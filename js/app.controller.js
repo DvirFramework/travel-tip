@@ -16,6 +16,7 @@ function onInit() {
     .initMap()
     .then((map) => {
       console.log("map is ready")
+      renderLocations()
       map.addListener("click", (ev) => {
         const lngLat = { lat: ev.latLng.lat(), lng: ev.latLng.lng() }
         mapService.panTo(lngLat.lat, lngLat.lng)
@@ -33,7 +34,8 @@ function renderLocations() {
     const elTable = document.querySelector(".locations-table")
     var strHtml = locations
       .map(
-        (location) => `<tr class="place"><td>${location.name}</td>
+        (location) => `
+        <tr class="place"><td>${location.name}</td>
                                        <td>${location.lat}</td> <td>${location.lng}</td><td><button class="go"
                                         onclick="onPanTo(${location.lat},${location.lng})">GO</button><td><button class="remove" 
                                         onclick="onRemoveLocation('${location.name}')">DELETE</button>`
@@ -91,14 +93,34 @@ function onGetUserPos() {
 //     mapService.addMarker({ lat: 32.0749831, lng: 34.9120554 })
 // }
 
-function onGetLocs() {
-  locService.getLocs().then((locs) => {
-    console.log("Locations:", locs)
-    document.querySelector(".locs").innerText = JSON.stringify(locs, null, 2)
-  })
+// function onGetLocs() {
+//   locService.getLocs().then((locs) => {
+//     console.log("Locations:", locs)
+//     document.querySelector(".locs").innerText = JSON.stringify(locs, null, 2)
+//   })
+// }
+
+function onAddLocation(ev) {
+  console.log(ev)
+  const name = prompt("location name?", "New location")
+  if (!name) return
+  const lat = ev.latLng.lat()
+  const lng = ev.latLng.lng()
+
+  locService
+    .addLocation(name, lat, lng, 15)
+    .then(() => renderLocations())
+    .catch((error) => console.log("Error adding location:", error))
 }
 
-function onPanTo() {
+function onPanTo(lat, lng) {
   console.log("Panning the Map")
-  mapService.panTo(35.6895, 139.6917)
+  mapService.panTo(lat, lng)
+}
+
+function onRemoveLocation(name) {
+  locService
+    .remove(name)
+    .then(() => renderLocations())
+    .catch((error) => console.error("Error removing loc:", error))
 }
