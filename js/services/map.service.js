@@ -1,8 +1,8 @@
 import { storageService } from "./async-storage.service.js"
-
+import { utilService } from "./util.service.js"
 const LOACATION_KEY = "locaitionDB"
 var gLocations = []
-_createLocations()
+// _createLocations()
 export const mapService = {
   initMap,
   addMarker,
@@ -74,17 +74,25 @@ function save(location) {
   }
 }
 
-function getPlaces() {
+function getLocations() {
   return gLocations
 }
 
-function _createLocation(id, name, lat, lng, weather, createdAt, updatedAt) {
+function addLocation(id, name, lat, lng, createdAt, updatedAt) {
+  gLocations.push(_createLocation(id, name, lat, lng, createdAt, updatedAt))
+  storageService.post(LOACATION_KEY, gLocations)
+}
+
+function getPlaceById(placeId) {
+  return gLocations.find((place) => place.id === placeId)
+}
+
+function _createLocation(id, name, lat, lng, createdAt, updatedAt) {
   return {
-    id: makeId(),
+    id: utilService.makeId(),
     name,
     lat,
     lng,
-    weather,
     createdAt,
     updatedAt
   }
@@ -103,15 +111,6 @@ function _createLocations() {
         updatedAt
       )
     ]
-    saveToStorage(LOACATION_KEY, gLocations)
+    utilService.saveToStorage(LOACATION_KEY, gLocations)
   }
-}
-
-function addLocation(name, lat, lng, zoom) {
-  gLocations.push(_createLocation(name, lat, lng, zoom))
-  storageService.post(LOACATION_KEY, gLocations)
-}
-
-function getPlaceById(placeId) {
-  return gLocations.find((place) => place.id === placeId)
 }
