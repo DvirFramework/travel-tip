@@ -1,5 +1,5 @@
 import { storageService } from "./async-storage.service.js"
-
+import { utilService } from "./util.service.js"
 const LOACATION_KEY = "locaitionDB"
 export const mapService = {
   initMap,
