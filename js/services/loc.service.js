@@ -1,8 +1,16 @@
 import { storageService } from "./async-storage.service.js"
 import { utilService } from "./util.service.js"
+
 const LOACATION_KEY = "locaitionDB"
+_createLocations()
+
 export const locService = {
-  getLocs
+  getLocs,
+  query,
+  get,
+  remove,
+  addLocation,
+  getPlaceById
 }
 
 var gLocations = []
@@ -46,12 +54,12 @@ function getPlaces() {
   return storageService.query()
 }
 
-function _createLocation(name, lat = 123, lng = 456, weather) {
+function _createLocation(name, lat = 123, lng = 456) {
   return {
+    id: utilService.makeId(),
     name,
     lat,
     lng,
-    weather,
     createdAt: Date.now(),
     updatedAt: Date.now()
   }
@@ -69,7 +77,7 @@ function _createDemoLocations() {
   const locationNames = ["israel", "germany", "brazil"]
   // const petDescs = ['Bobi is an amazing dog', 'Charli is a curious cat', 'Just one look at Pinchi']
 
-  const locations = locationNames.map((locationName, i) => {
+  const locations = locationNames.map((locationName) => {
     const location = _createLocation(locationName)
     // pet.desc = petDescs[i]
     return location
@@ -79,8 +87,9 @@ function _createDemoLocations() {
 }
 
 function addLocation(name, lat, lng, zoom) {
-  gLocations.push(_createLocation(name, lat, lng, zoom))
-  storageService.post(LOACATION_KEY, gLocations)
+  const newLocation = _createLocation(name, lat, lng, zoom)
+  gLocations.push(newLocation)
+  storageService.post(LOACATION_KEY, newLocation)
 }
 
 function getPlaceById(placeId) {
