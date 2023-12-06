@@ -1,16 +1,24 @@
 import { storageService } from "./async-storage.service.js"
 import { utilService } from "./util.service.js"
+
 const LOACATION_KEY = "locaitionDB"
+_createLocations()
+
 export const locService = {
-  getLocs
+  getLocs,
+  query,
+  get,
+  remove,
+  save,
+  addLocation,
+  getPlaceById,
+  getPlaces,
+  getEmptyLoc
+
 }
 
 var gLocations = []
 
-// const locs = [
-//   { name: "Greatplace", lat: 32.047104, lng: 34.832384 },
-//   { name: "Neveragain", lat: 32.047201, lng: 34.832581 }
-// ]
 
 function getLocs() {
   return new Promise((resolve, reject) => {
@@ -30,8 +38,8 @@ function get(locationId) {
   return storageService.get(LOACATION_KEY, locationId)
 }
 
-function remove(locationId) {
-  return storageService.remove(LOACATION_KEY, locationId)
+function remove(locationName) {
+  return storageService.remove(LOACATION_KEY, locationName)
 }
 
 function save(location) {
@@ -46,12 +54,12 @@ function getPlaces() {
   return storageService.query()
 }
 
-function _createLocation(name, lat = 123, lng = 456, weather) {
+function _createLocation(name, lat = 123, lng = 456, ) {
   return {
+    id:utilService.makeId(),
     name,
     lat,
     lng,
-    weather,
     createdAt: Date.now(),
     updatedAt: Date.now()
   }
@@ -67,16 +75,24 @@ function _createLocations() {
 }
 function _createDemoLocations() {
   const locationNames = ["israel", "germany", "brazil"]
-  // const petDescs = ['Bobi is an amazing dog', 'Charli is a curious cat', 'Just one look at Pinchi']
 
-  const locations = locationNames.map((locationName, i) => {
+  const locations = locationNames.map((locationName) => {
     const location = _createLocation(locationName)
-    // pet.desc = petDescs[i]
     return location
   })
 
   utilService.saveToStorage(LOACATION_KEY, locations)
 }
+
+// function getEmptyLoc(name, lat, lng) {
+//   return {
+//     name,
+//     lat,
+//     lng,
+//     createAt: new Date(),
+//     updatedAt: new Date(),
+//   }
+// }
 
 function addLocation(name, lat, lng, zoom) {
   gLocations.push(_createLocation(name, lat, lng, zoom))
