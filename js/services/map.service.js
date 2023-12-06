@@ -1,8 +1,6 @@
 import { storageService } from "./async-storage.service.js"
 
 const LOACATION_KEY = "locaitionDB"
-var gLocations = []
-_createLocations()
 export const mapService = {
   initMap,
   addMarker,
@@ -52,66 +50,3 @@ function _connectGoogleApi() {
   })
 }
 
-function query() {
-  return storageService.query(LOACATION_KEY).then((locations) => {
-    return locations
-  })
-}
-
-function get(locationId) {
-  return storageService.get(LOACATION_KEY, locationId)
-}
-
-function remove(locationId) {
-  return storageService.remove(LOACATION_KEY, locationId)
-}
-
-function save(location) {
-  if (location.id) {
-    return storageService.put(LOACATION_KEY, location)
-  } else {
-    return storageService.post(LOACATION_KEY, location)
-  }
-}
-
-function getPlaces() {
-  return gLocations
-}
-
-function _createLocation(id, name, lat, lng, weather, createdAt, updatedAt) {
-  return {
-    id: makeId(),
-    name,
-    lat,
-    lng,
-    weather,
-    createdAt,
-    updatedAt
-  }
-}
-
-function _createLocations() {
-  gLocations = storageService.load(LOACATION_KEY)
-  if (!gLocations || !gLocations.length) {
-    gLocations = [
-      _createLocation(
-        "My house",
-        32.690238,
-        35.196458,
-        weather,
-        createdAt,
-        updatedAt
-      )
-    ]
-    saveToStorage(LOACATION_KEY, gLocations)
-  }
-}
-
-function addLocation(name, lat, lng, zoom) {
-  gLocations.push(_createLocation(name, lat, lng, zoom))
-  storageService.post(LOACATION_KEY, gLocations)
-}
-
-function getPlaceById(placeId) {
-  return gLocations.find((place) => place.id === placeId)
-}
